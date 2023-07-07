@@ -1,0 +1,220 @@
+:root {
+  --fs-75: 0.75rem;
+  --fs-125: 1.25rem;
+  --fs-200: 2rem;
+
+  --fs-300: 3rem;
+  --fs-350: 3.5rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+body {
+  background-color: var(--clr-bg-300);
+  font-family: "League Spartan", sans-serif;
+  box-sizing: border-box;
+}
+
+main {
+  /* background-color: lightcyan; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  max-width: 30rem;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ============================ */
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 0.75rem;
+  /* background-color: lightcoral; */
+
+  color: var(--clr-text-200);
+}
+
+.top-title {
+  font-size: var(--fs-200);
+}
+
+.top__theme p {
+  font-size: var(--fs-75);
+}
+
+.top__theme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn__change-theme {
+  background: var(--clr-bg-200);
+  width: 4rem;
+  padding: 0.3rem;
+  border-radius: 1rem;
+
+  position: relative;
+}
+
+.btn__change-theme--label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-inline: 0.6rem;
+
+  font-size: var(--fs-75);
+  color: var(--clr-text-200);
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -60%;
+}
+
+.btn__states {
+  width: 1rem;
+  aspect-ratio: 1;
+  background-color: var(--clr-key-medium-200);
+  border-radius: 100%;
+
+  transform: translateX(112.5%);
+  /* 112.5% , 225% */
+}
+
+/* === MAIN DISPLAY === */
+
+.display {
+  background-color: var(--clr-bg-100);
+  padding: 1.25rem 1.25rem;
+  border-radius: 0.5rem;
+
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  flex-direction: column;
+
+  height: 5rem;
+}
+
+.display__main {
+  color: var(--clr-text-200);
+  font-size: var(--fs-300);
+  white-space: nowrap;
+}
+
+.display__sub {
+  color: var(--clr-text-150);
+  font-size: var(--fs-125);
+}
+
+/* === BUTTONS === */
+
+.keys {
+  background-color: var(--clr-bg-200);
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+}
+
+.keys__input {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.keys__submit {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.btn-key {
+  padding: 0.8rem 1.25rem 0.6rem 1.25rem;
+
+  display: inline-block;
+
+  font-size: 1.75rem;
+  border-radius: 0.5rem;
+  line-height: 1;
+
+  transition: background-color 0.25s, transform 0.1s;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.btn-key::after {
+  content: "";
+
+  background-color: transparent;
+
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  top: -0.2rem;
+  left: 0;
+  right: 0;
+
+  box-shadow: 0 0 100rem 100rem rgba(0, 0, 0, 0.25);
+  /* mix-blend-mode: soft-light; */
+
+  border-radius: 0.5rem;
+
+  z-index: 1;
+}
+
+.keys__submit button {
+  font-size: 1.5rem;
+}
+
+.btn-key:active {
+  transform: translateY(5%) scale(0.975);
+}
+
+.btn__light {
+  background-color: var(--clr-key-light-200);
+  color: var(--clr-text-100);
+}
+
+.btn__light:hover {
+  background-color: white;
+}
+
+.btn__dark:hover {
+  background-color: var(--clr-key-dark-200);
+}
+
+.btn__accent:hover {
+  background-color: var(--clr-key-medium-200);
+}
+
+.btn__dark {
+  background-color: var(--clr-key-dark-100);
+  color: var(--clr-key-light-200);
+}
+
+.btn__accent {
+  background-color: var(--clr-key-medium-100);
+  color: var(--clr-text-200);
+}

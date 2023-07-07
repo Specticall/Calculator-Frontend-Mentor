@@ -1,0 +1,19 @@
+:root {
+  --clr-bg-300: hsl(222, 26%, 31%);
+  --clr-bg-200: hsl(223, 31%, 20%);
+  --clr-bg-100: hsl(224, 36%, 15%);
+
+  --clr-key-dark-200: hsl(225, 21%, 49%);
+  --clr-key-dark-100: hsl(224, 28%, 35%);
+
+  --clr-key-medium-200: hsl(6, 63%, 50%);
+  --clr-key-medium-100: hsl(6, 70%, 34%);
+
+  --clr-key-light-200: hsl(30, 25%, 89%);
+  --clr-key-light-100: hsl(28, 16%, 65%);
+
+  --clr-text-200: hsl(0, 0%, 100%);
+  --clr-text-150: hsl(0, 0%, 60%);
+  --clr-text-100: hsl(221, 14%, 31%);
+  --clr-text-0: hsl(221, 14%, 31%);
+}
