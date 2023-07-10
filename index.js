@@ -4,7 +4,7 @@ IMPORTANT :
 Fix how to calculator handles "." and "0", harus bikin chart dulu kayanya
 
 1. find a way biar kalo ada e di hasilnya displaynya bisa bener
-2. updateDisplay function masih need alot of work (skrg baru update main display doang)
+2. updateDisplay function masih need alot of work
 3. Delete and reset button
 4. responsive 
 
@@ -16,7 +16,7 @@ when pressing "." comma after a result it becomes NaN
 const btnKey = document.querySelectorAll(".btn-key");
 
 // Stores the value of an ongoing operation
-let onGoingOperation = [];
+let onGoingOperation = ["0", "", "0"];
 
 // format -> [i, "operation"]  : "result"
 // E.G   { "1)10,+,10": "20" }
@@ -56,24 +56,23 @@ function insertKey() {
 
   // [0-9] if either converting the key results in a number, key is 0 or key is "." then proceed
   if (Number(key) || key === "0" || key === ".") {
+    //prettier-ignore
+    //(if it contains a "." already or is still at the starting point then return)
     if (
-      (key === "0" &&
-        `${onGoingOperation[onGoingIndex]}`[0] === "0") ||
-      (key === "." &&
-        `${onGoingOperation[onGoingIndex]}`.includes("."))
-    )
+      (key === "." && `${onGoingOperation[onGoingIndex]}`.includes(".")) ||
+      (key === "0" && onGoingOperation[onGoingIndex] === "0" && isTheSame(onGoingOperation, ["0","","0"])) ||
+      (onGoingOperation[onGoingIndex].length === 12)
+    ) 
       return;
 
-    console.log(onGoingOperation);
-
+    // replace the default "0" when inputting any numbers other than "."
     if (
-      key === "." &&
-      `${onGoingOperation[onGoingIndex]}`[0] !== "0"
+      onGoingOperation[onGoingIndex] === "0" &&
+      key !== "."
     )
-      onGoingOperation[onGoingIndex] =
-        (onGoingOperation[onGoingIndex] || "") + 0;
+      onGoingOperation[onGoingIndex] = null;
 
-    // if its empty then add "" + key else current + key (if it contains a "." already then return)
+    // if its empty then add "" + key else current + key
     onGoingOperation[onGoingIndex] =
       (onGoingOperation[onGoingIndex] || "") + key;
 
@@ -82,14 +81,13 @@ function insertKey() {
 
     //prettier-ignore
     // coming from the destructured ongoing operation array
-    updateDisplay(onGoingOperation[onGoingIndex], [first,operator]);
+    updateDisplay(onGoingOperation[onGoingIndex], [
+      first,
+      operator,
+    ]);
 
     // We have broken the streak of pressing the equal button
     equalsClicked = 0;
-
-    // console.log(
-    //   onGoingOperation[onGoingIndex].includes(".")
-    // );
   }
 
   // Stops any buttons other than numbers from being pressed
@@ -108,7 +106,10 @@ function insertKey() {
     }
 
     // Checks if the user does another operation before pressing the = button
-    if (onGoingOperation.length === 3) {
+    if (
+      onGoingOperation.length === 3 &&
+      onGoingOperation[2] !== "0"
+    ) {
       calculateResult(historyLength);
 
       // Retrieve the previous calculation from the object
@@ -136,6 +137,7 @@ function insertKey() {
 
   // [=] If its the equal sign then proceed
   if (key === "=") {
+    // console.log("onGoing Operation", onGoingOperation);
     // Keeps track of how many equals we have clicked
     equalsClicked++;
     // Checks if the "=" button is pressed again without inputing new numbers
@@ -159,25 +161,23 @@ function insertKey() {
     // if (onGoingOperation.length < 2) return;
 
     // If we're not pressing the "=" in succession, then proceed
-    if (onGoingOperation.length < 2) return;
+    if (onGoingOperation[1] === "") return;
     calculateResult(historyLength);
   }
 
   function onGoingIsEmpty() {
-    return onGoingOperation.length === 0 &&
+    return isTheSame(onGoingOperation, ["0", "", "0"]) &&
       historyLength > 0
       ? true
       : false;
   }
 
   // ====== checking ===========
-  console.log(onGoingOperation);
+  // console.log(onGoingOperation);
 }
 
 function repeatCalculation(incrementBy) {
   return function (historyLength) {
-    console.log(incrementBy);
-
     // Retrieve the previous calculation from the object
     const [previousCalc, previousResult] = Object.entries(
       operationHistory
@@ -196,6 +196,9 @@ function repeatCalculation(incrementBy) {
 }
 
 // This function will calculate the ongoing array and store the result in the object
+function isTheSame(arr1, arr2) {
+  return arr1.every((val, i) => val === arr2[i]);
+}
 
 function calculateResult(historyLength) {
   // We can press it before inputing 2nd numbers
@@ -220,11 +223,10 @@ function calculateResult(historyLength) {
   // Updates the display
   updateDisplay(operationHistory[historyKey], onGoingOperation);
   // Reset ongoing operation
-  onGoingOperation = [];
+  onGoingOperation = ["0", "", "0"];
 
   // Reset ongoing index position
   onGoingIndex = 0;
-  console.log(operationHistory);
 }
 
 // This function handles the display update on the DOM
@@ -240,15 +242,8 @@ function updateDisplay(main, secondary = []) {
   const [subFirst = "", subOperator = "", subSecond = ""] =
     secondary;
 
-  // Limits character amount to 15 and formats it properly
-  const formatMain = Number(main)
-    .toLocaleString("de-DE", {
-      maximumFractionDigits: 20,
-    })
-    .slice(0, 15);
-
   // Formats and updates the main display text
-  mainDisplay.textContent = formatMain;
+  mainDisplay.textContent = formatNumber(main);
 
   // Formats and updates the sub display text
   subDisplay.textContent = `${subFirst} ${subOperator} ${subSecond} ${
@@ -256,8 +251,35 @@ function updateDisplay(main, secondary = []) {
   }`;
 }
 
-// Example input
-// updateDisplay("123456.1249081752893", ["10", "+"]);
+// Formats the number but without any rounding
+//prettier-ignore
+function formatNumber(num) {
+  if(num == Infinity) return "Infinity"
+  if (num === "0.") return num;
+
+  let result = [];
+  let [number, comma] = num.split(".");
+  for (let i = number.length - 1; i >= 0; i--) {
+    result.unshift(number[i]);
+    if (!((number.length - i) % 3)) result.unshift(",");
+  }
+
+  comma = comma ? `.${comma}` : ""
+
+  let answer = `${(number.length % 3 === 0 ? result.slice(1) : result).join("")}${comma}`;
+
+  if(answer.includes("e")) answer = formatNumberWithE(answer)
+
+  return answer.length > 16 ? answer.slice(0, 15) : answer;
+}
+
+// Fromat but with big numbers that contains "e"
+//prettier-ignore
+function formatNumberWithE(num) {
+  const [num_e, power_e] = num.split("e");
+  if (num_e.length + power_e.length < 16) return num;
+  return `${Number(num_e).toFixed(16 - (power_e.length + 4))}e${power_e}`;
+}
 
 btnKey.forEach((btn) => {
   btn.addEventListener("click", insertKey);
@@ -358,4 +380,23 @@ Logic :
   Main : "6" [new first input]
 
   onGoingOperation = [3000, x]
+*/
+
+/*TO DO
+
+Weird behaviours
+
+V when pressing the equal button subsquently after doing calculations it will repeat the same calculation with the same second input but different first
+200 + 200 = 400 -> 400 + 200 = 600 -> 600 + 200 -> 1000 + 200 = 1200 -> 1200 + 200 = etc...
+
+X When pressing the equal number before adding a second input, the second input will default to the first
+200 + ... -> 200 + 200
+
+V placing alot of zeros after a comma does not display on the screen
+5.0000 -> 5
+
+V on the second input, adding a dot without any numbers next to it won't display on the screen
+2. -> 2 (on the screen)
+
+
 */
