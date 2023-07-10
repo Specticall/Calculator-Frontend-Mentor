@@ -18,7 +18,11 @@
     <title>Frontend Mentor | Calculator app</title>
     <!-- ==== CSS LINK === -->
     <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="theme-dark.css" />
+    <link
+      rel="stylesheet"
+      href="theme-dark.css"
+      id="theme-link"
+    />
 
     <!-- ==== FONT === -->
     <link
@@ -41,7 +45,10 @@
         <p class="top-title">calc</p>
         <div class="top__theme">
           <p>THEME</p>
-          <button class="btn btn__change-theme">
+          <button
+            class="btn btn__change-theme"
+            data-theme="dark"
+          >
             <div class="btn__states" id="theme-state"></div>
             <label
               for="theme-state"
@@ -55,7 +62,7 @@
         </div>
       </div>
       <div class="display">
-        <span class="display__sub empty">20 + 30</span>
+        <span class="display__sub empty"></span>
         <!-- Max 16 character -->
         <h1 class="display__main empty">0</h1>
       </div>
@@ -70,7 +77,10 @@
           <button class="btn-key btn__light" data-key="9">
             9
           </button>
-          <button class="btn-key btn__dark" data-key="DEL">
+          <button
+            class="btn-key btn__dark btn-del btn-accent"
+            data-key="DEL"
+          >
             DEL
           </button>
           <button class="btn-key btn__light" data-key="4">
@@ -112,12 +122,15 @@
         </div>
         <div class="keys__submit">
           <button
-            class="btn-key btn__dark"
+            class="btn-key btn__dark btn-accent"
             data-key="RESET"
           >
             RESET
           </button>
-          <button class="btn-key btn__accent" data-key="=">
+          <button
+            class="btn-key btn__accent btn-accent-2"
+            data-key="="
+          >
             =
           </button>
         </div>

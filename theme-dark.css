@@ -16,4 +16,17 @@
   --clr-text-150: hsl(0, 0%, 60%);
   --clr-text-100: hsl(221, 14%, 31%);
   --clr-text-0: hsl(221, 14%, 31%);
+
+  --clr-text-main-display: hsl(0, 0%, 100%);
+
+  --clr-equal-sign: hsl(0, 0%, 100%);
+
+  --clr-button-main-shadow: hsl(35, 11%, 61%);
+  --clr-button-dark-shadow: hsl(222, 26%, 25%);
+
+  --clr-button-main-hover: white;
+  --clr-button-dark-hover: hsl(225, 21%, 49%);
+  --clr-button-accent-hover: hsl(6, 63%, 60%);
+
+  --clr-scrollbar: hsl(223, 31%, 20%);
 }

@@ -9,9 +9,18 @@ Fix how to calculator handles "." and "0", harus bikin chart dulu kayanya
 4. responsive 
 
 
-BUG :
-when pressing "." comma after a result it becomes NaN
 */
+// Selects the DOM elements
+const changeThemeBtn = document.querySelector(
+  ".btn__change-theme"
+);
+const changeThemeCircle =
+  document.querySelector(".btn__states");
+
+const mainDisplay = document.querySelector(
+  ".display__main"
+);
+const subDisplay = document.querySelector(".display__sub");
 
 const btnKey = document.querySelectorAll(".btn-key");
 
@@ -20,7 +29,7 @@ let onGoingOperation = ["0", "", "0"];
 
 // format -> [i, "operation"]  : "result"
 // E.G   { "1)10,+,10": "20" }
-const operationHistory = {};
+let operationHistory = {};
 
 // Keep track of which index our input should be on the onGoingOperation array
 let onGoingIndex = 0;
@@ -30,6 +39,33 @@ let repeatCalc;
 
 // This listener will detect every time we hit the "=" button, when we clicked it more than once than the repeatCalc function will be called
 let equalsClicked = 0;
+
+// Variabel that stores a state of whether the 2nd has been typed yet or not
+let secondInput_Is_Filled = false;
+
+// ===== CHANGE THEME ========
+const theme_link = document.querySelector("#theme-link");
+let theme_direction = "right",
+  theme_index = 0;
+const themes = ["dark", "white", "neon"];
+
+//prettier-ignore
+changeThemeBtn.addEventListener("click", function () {
+
+  theme_direction === "right" ? theme_index++ : theme_index-- 
+  
+  
+  changeThemeCircle.style.transform = `translateX(${112.5 * theme_index}%)`
+
+  if (theme_index === 0) theme_direction = "right";
+  if (theme_index === 2) theme_direction = "left";
+
+  switchTheme(themes[theme_index])
+});
+
+function switchTheme(theme) {
+  theme_link.setAttribute("href", `theme-${theme}.css`);
+}
 
 const calculate = {
   "+"(a, b) {
@@ -76,6 +112,8 @@ function insertKey() {
     onGoingOperation[onGoingIndex] =
       (onGoingOperation[onGoingIndex] || "") + key;
 
+    if (onGoingIndex === 2) secondInput_Is_Filled = true;
+
     const [first = "", operator = "", second = first] =
       onGoingOperation;
 
@@ -106,6 +144,7 @@ function insertKey() {
     }
 
     // Checks if the user does another operation before pressing the = button
+    // If the onGoing array is filled with numbers that are not the default value, then proceed
     if (
       onGoingOperation.length === 3 &&
       onGoingOperation[2] !== "0"
@@ -137,7 +176,6 @@ function insertKey() {
 
   // [=] If its the equal sign then proceed
   if (key === "=") {
-    // console.log("onGoing Operation", onGoingOperation);
     // Keeps track of how many equals we have clicked
     equalsClicked++;
     // Checks if the "=" button is pressed again without inputing new numbers
@@ -157,14 +195,54 @@ function insertKey() {
       repeatCalc(historyLength);
     }
 
-    // If there is only the first index at the ongoing operation array, return
-    // if (onGoingOperation.length < 2) return;
-
     // If we're not pressing the "=" in succession, then proceed
+    // detects if there are operators added, if none then the function stops but if yes the proceed to calculate normally
     if (onGoingOperation[1] === "") return;
+
+    if (
+      (onGoingOperation[2] === "0") &
+      !secondInput_Is_Filled
+    ) {
+      onGoingOperation[2] = onGoingOperation[0];
+      calculateResult(historyLength);
+      return;
+    }
+
     calculateResult(historyLength);
   }
 
+  if (key === "DEL") {
+    onGoingOperation[onGoingIndex] =
+      onGoingOperation[onGoingIndex].length === 1
+        ? "0"
+        : onGoingOperation[onGoingIndex].slice(0, -1);
+
+    const [first = "", operator = "", second = first] =
+      onGoingOperation;
+
+    //prettier-ignore
+    // coming from the destructured ongoing operation array
+    updateDisplay(onGoingOperation[onGoingIndex], [
+    first,
+    operator,
+  ]);
+
+    // We have broken the streak of pressing the equal button
+    equalsClicked = 0;
+  }
+
+  if (key === "RESET") {
+    onGoingOperation = ["0", "", "0"];
+    operationHistory = {};
+    onGoingIndex = 0;
+    equalsClicked = 0;
+    secondInput_Is_Filled = false;
+
+    mainDisplay.textContent = 0;
+    subDisplay.textContent = "";
+  }
+
+  // Check if the ongoing array is empty or not and whether a calculation has been done
   function onGoingIsEmpty() {
     return isTheSame(onGoingOperation, ["0", "", "0"]) &&
       historyLength > 0
@@ -173,7 +251,7 @@ function insertKey() {
   }
 
   // ====== checking ===========
-  // console.log(onGoingOperation);
+  // console.log(onGoingOperation, secondInput_Is_Filled);
 }
 
 function repeatCalculation(incrementBy) {
@@ -195,7 +273,7 @@ function repeatCalculation(incrementBy) {
   };
 }
 
-// This function will calculate the ongoing array and store the result in the object
+// This function will test is arr1 and arr2 are equal
 function isTheSame(arr1, arr2) {
   return arr1.every((val, i) => val === arr2[i]);
 }
@@ -222,8 +300,10 @@ function calculateResult(historyLength) {
   // prettier-ignore
   // Updates the display
   updateDisplay(operationHistory[historyKey], onGoingOperation);
+
   // Reset ongoing operation
   onGoingOperation = ["0", "", "0"];
+  secondInput_Is_Filled = false;
 
   // Reset ongoing index position
   onGoingIndex = 0;
@@ -231,13 +311,6 @@ function calculateResult(historyLength) {
 
 // This function handles the display update on the DOM
 function updateDisplay(main, secondary = []) {
-  // Selects the DOM elements
-  const mainDisplay = document.querySelector(
-    ".display__main"
-  );
-  const subDisplay =
-    document.querySelector(".display__sub");
-
   // destructure the secondary array
   const [subFirst = "", subOperator = "", subSecond = ""] =
     secondary;
@@ -246,7 +319,9 @@ function updateDisplay(main, secondary = []) {
   mainDisplay.textContent = formatNumber(main);
 
   // Formats and updates the sub display text
-  subDisplay.textContent = `${subFirst} ${subOperator} ${subSecond} ${
+  subDisplay.textContent = `${formatNumber(
+    subFirst
+  )} ${subOperator} ${formatNumber(subSecond)} ${
     secondary.length === 3 ? "=" : ""
   }`;
 }
@@ -254,24 +329,29 @@ function updateDisplay(main, secondary = []) {
 // Formats the number but without any rounding
 //prettier-ignore
 function formatNumber(num) {
+  if(num == NaN) return "Error"
   if(num == Infinity) return "Infinity"
   if (num === "0.") return num;
 
+
   let result = [];
-  let [number, comma] = num.split(".");
+  let [number, comma] = num.includes("-") ? num.slice(1).split(".") : num.split(".") ;
   for (let i = number.length - 1; i >= 0; i--) {
     result.unshift(number[i]);
     if (!((number.length - i) % 3)) result.unshift(",");
   }
 
-  comma = comma ? `.${comma}` : ""
+  comma = comma ? `.${comma}` : "";
+
 
   let answer = `${(number.length % 3 === 0 ? result.slice(1) : result).join("")}${comma}`;
 
   if(answer.includes("e")) answer = formatNumberWithE(answer)
 
-  return answer.length > 16 ? answer.slice(0, 15) : answer;
+  return `${num.includes("-") ? "-" : ""}${answer}`;
 }
+
+// console.log(formatNumber("-500"));
 
 // Fromat but with big numbers that contains "e"
 //prettier-ignore
@@ -389,7 +469,7 @@ Weird behaviours
 V when pressing the equal button subsquently after doing calculations it will repeat the same calculation with the same second input but different first
 200 + 200 = 400 -> 400 + 200 = 600 -> 600 + 200 -> 1000 + 200 = 1200 -> 1200 + 200 = etc...
 
-X When pressing the equal number before adding a second input, the second input will default to the first
+V When pressing the equal number before adding a second input, the second input will default to the first
 200 + ... -> 200 + 200
 
 V placing alot of zeros after a comma does not display on the screen

@@ -4,8 +4,8 @@
   /* Repeat */
   --clr-bg-100: hsl(268, 71%, 12%);
 
-  --clr-key-dark-200: hsl(281, 89%, 26%);
-  --clr-key-dark-100: hsl(285, 91%, 52%);
+  --clr-key-dark-100: hsl(281, 89%, 26%);
+  --clr-key-dark-200: hsl(285, 91%, 52%);
 
   --clr-key-medium-200: hsl(176, 100%, 44%);
   --clr-key-medium-100: hsl(177, 92%, 70%);
@@ -17,4 +17,16 @@
   --clr-text-150: hsl(0, 0%, 60%);
   --clr-text-100: hsl(52, 100%, 62%);
   --clr-text-0: hsl(198, 20%, 13%);
+
+  --clr-text-main-display: hsl(52, 100%, 62%);
+  --clr-equal-sign: hsl(60, 10%, 19%);
+
+  --clr-button-main-shadow: hsl(285, 91%, 52%);
+  --clr-button-dark-shadow: hsl(285, 91%, 52%);
+
+  --clr-button-main-hover: hsl(285, 91%, 52%);
+  --clr-button-dark-hover: hsl(285, 91%, 52%);
+  --clr-button-accent-hover: hsl(177, 92%, 70%);
+
+  --clr-scrollbar: hsl(268, 71%, 18%);
 }
